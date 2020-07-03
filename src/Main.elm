@@ -34,13 +34,12 @@ init =
 
 
 
-
 -- UPDATE
 
 type Msg 
   = Estatura String
   | Peso String
-  | Resultado String
+  | Resultado
 
 
 update : Msg -> Model -> Model
@@ -52,10 +51,8 @@ update msg model =
     Peso nuevoPeso ->
       {model | peso  =  nuevoPeso}
 
-    Resultado res->
-      {model | resultado = model.estatura}
-
-
+    Resultado->
+      {model | resultado = "IMC"}
 
 
 
@@ -69,7 +66,7 @@ view model =
   [ 
 
     div[] [
-    input [ type_ "number",  placeholder "Introduce tu estatura", value  model.estatura, onInput Estatura] []
+    input [type_ "number",  placeholder "Introduce tu estatura", value  model.estatura, onInput Estatura] []
     , text  model.estatura
     ]
     , 
@@ -78,7 +75,12 @@ view model =
       input [ type_ "number",  placeholder "Introduce tu peso", value  model.peso, onInput Peso] []
     , text  model.peso
     ]
-    
+    ,
+
+    button [ onClick Resultado ] [ text "Calcule su IMC" ]
+    , div[] [
+    text  model.resultado
+    ]
     
   ]
 
