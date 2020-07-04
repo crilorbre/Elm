@@ -21,15 +21,16 @@ type alias Model =
   { 
     estatura: String,
     peso: String,
-    resultado: Float
+    resultado: String
   }
 
 init : Model
 init = 
   {estatura = ""
   , peso = ""
-  , resultado = 0.0
+  , resultado = ""
   } 
+
 
 
 
@@ -51,9 +52,25 @@ update msg model =
       {model | peso  =  nuevoPeso}
 
     Resultado->
-      {model | resultado = Maybe.withDefault 0.0(String.toFloat model.peso) / (Maybe.withDefault 0.0(String.toFloat model.estatura) * Maybe.withDefault 0.0(String.toFloat model.estatura))}
+      {model | resultado = obtenerResultado model.estatura model.peso}
 
 
+
+
+-- AUXILIAR FUNCTIONS
+
+-- Funcion para obtener el string que se muestra por pantalla visualizando los datos de
+-- estatura, peso y imc
+obtenerResultado: String -> String -> String
+obtenerResultado estatura peso =
+  "Para una estatura de " ++ estatura ++ " m y un peso de " ++
+    peso ++ " kg, su IMC es de " ++ obtenerIMC estatura peso ++ "."
+
+-- Funcion para obtener el IMC a partir de la estatura y el peso
+-- y quedarme con 2 decimales
+obtenerIMC: String -> String -> String
+obtenerIMC estatura peso = 
+  String.left 5 (String.fromFloat(Maybe.withDefault 0.0(String.toFloat peso) / (Maybe.withDefault 0.0(String.toFloat estatura) * Maybe.withDefault 0.0(String.toFloat estatura))))
 
 
 -- VIEW
@@ -61,7 +78,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div[]
+  div[style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center", style "min-height" "80vh"] 
   [ 
     div [] [
       h1 [] [text "Calculadora del índice de masa corportal (IMC)"]
@@ -71,22 +88,34 @@ view model =
     div[] [
     label [] [text "Introduzca su estatura (en metros): "]
     , input [type_ "number",  placeholder "Introduce tu estatura", value  model.estatura, onInput Estatura] []
-    , text  model.estatura
     ]
     , 
     
     div[] [
       label [] [text "Introduzca su peso (en kgs): "]
       ,input [ type_ "number",  placeholder "Introduce tu peso", value  model.peso, onInput Peso] []
-    , text  model.peso
+    ]
+  
+    , div[] [
+    text  model.resultado
     ]
     ,
-
-    button [ onClick Resultado ] [ text "Calcule su IMC" ]
-    , div[] [
-    text  (String.fromFloat model.resultado)
-    ]
-    
+    viewValidation model
   ]
+
+
+-- VALIDATION VIEW
+viewValidation : Model -> Html Msg
+
+viewValidation model =
+  if model.estatura > "0"  && model.peso > "0" then
+    button [ onClick Resultado ] [ text "Calcule su IMC" ]
+  else if model.estatura /= "" && model.estatura <= "0" then
+    div [ style "color" "red" ] [ text "Por favor, introduce una estatura válida" ]
+  else if model.peso /= "" && model.peso <= "0" then
+    div [ style "color" "red" ] [ text "Por favor, introduce un peso válido" ]
+  else
+    div [][]
+    
 
 
