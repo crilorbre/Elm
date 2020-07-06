@@ -2,7 +2,7 @@ module Main exposing (..)
 
 
 import Browser
-import Html exposing (Html, h1, label, div, text, input, button)
+import Html exposing (Html, h1, label, div, text, input, button, table, th, td, tr)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 
@@ -95,39 +95,35 @@ obtenerIMC estatura peso =
 
 view : Model -> Html Msg
 view model =
-  div[style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center", style "min-height" "100vh"]  
+  div[style "display" "flex", style "justify-content" "center", style "align-items" "center", style "min-height" "100vh"]  
   [ 
-    div [style "background" "linear-gradient(to right, #44ddd0, #27d7a1)", style "border-radius" "5px", style "padding" "60px 40px", style "position" "relative"][
-
-      div [] [
-        h1 [style "text-align" "center"] [text "Calculadora del índice de masa corportal (IMC)"]
-      ]
-      ,
-      div [][
+    
+      div [style "height" "400px", style "width" "350px", style "padding" "42px", style "display" "flex", style "justify-content" "center", style "align-items" "center", style "background" "#55efc4", style "border-top-left-radius" "8px", style "border-bottom-left-radius" "8px", style "position" "relative"][
         
         div[] [
         label [style "font-size" "20px"] [text "Introduzca su estatura (en metros): "]
         , input [style "width" "100%", style "margin" "15px 0", style "padding" "12px 0px", 
         type_ "number",  placeholder "Introduce tu estatura...", value  model.estatura, onInput Estatura] []
-        ]
-        , 
         
-        div[] [
-          label [style "font-size" "20px"] [text "Introduzca su peso (en kgs): "]
-          ,input [style "width" "100%", style "margin" "15px 0", style "padding" "12px 0px", 
-          type_ "number",  placeholder "Introduce tu peso...", value  model.peso, onInput Peso] []
-        ]
-      ]
+        , label [style "font-size" "20px"] [text "Introduzca su peso (en kgs): "]
+        ,input [style "width" "100%", style "margin" "15px 0", style "padding" "12px 0px", 
+        type_ "number",  placeholder "Introduce tu peso...", value  model.peso, onInput Peso] []
+        ],
+        
+        viewValidation model
       
+      ]
       ,
 
-      div[] [
-      text  model.resultado
-      ]
-      ,
-      viewValidation model,
-      viewInterpretacion model
-    ]
+      div[style "height" "400px", style "width" "350px", style "padding" "42px", style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center", style "background" "#55efc4", style "border-top-right-radius" "8px", style "border-bottom-right-radius" "8px"][
+        div[style "height" "400px", style "width" "350px", style "margin" "10px", style "display" "flex", style "justify-content" "center", style "align-items" "center", style "background" "#f8f8f8", style "text-align" "center", style "font-size" "20px"][
+          text  model.resultado
+        ],
+        div[style "height" "400px", style "width" "350px", style "margin" "10px", style "display" "flex", style "justify-content" "center", style "align-items" "center", style "background" "#f8f8f8"][
+          viewInterpretacion model
+        ]
+      ]      
+    
   ]
 
 
@@ -136,30 +132,50 @@ viewValidation : Model -> Html Msg
 
 viewValidation model =
   if model.estatura > "0"  && model.peso > "0" then
-    div [style "position" "absolute", style "right" "25px", style "bottom" "25px", style "border-radius" "8px"] [
-      button [ style "padding" "12px 30px", onClick Interpretacion ] [ text "Calcule su IMC" ]
+    div [style "position" "absolute", style "right" "25px", style "bottom" "25px"] [
+      button [  style "padding" "12px 20px", style "border-radius" "70px", onClick Interpretacion ] [ text "Calcule su IMC" ]
       , 
-      button [ style "padding" "12px 30px", onClick Clear ] [ text "Clear" ]
+      button [  style "padding" "12px 20px", style "border-radius" "70px", onClick Clear ] [ text "Clear" ]
     ]
     
   else if model.estatura /= "" && model.estatura <= "0" then
-    div [ style "color" "red" ] [ text "Por favor, introduce una estatura válida" ]
+    div [ style "color" "red", style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce una estatura válida" ]
   else if model.peso /= "" && model.peso <= "0" then
-    div [ style "color" "red" ] [ text "Por favor, introduce un peso válido" ]
+    div [ style "color" "red", style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce un peso válido" ]
   else
     div [][]
 
 viewInterpretacion: Model -> Html Msg
 viewInterpretacion model =
   if model.interpretacion /= "" then
-    if model.interpretacion == "Bajo peso" then
-      div [ style "color" "red" ] [ text "Bajo peso" ]
-    else if model.interpretacion == "Normal" then
-      div [ style "color" "red" ] [ text "Normal" ]
-    else if model.interpretacion == "Sobrepeso" then
-      div [ style "color" "red" ] [ text "Sobrepeso" ]
-    else 
-      div [ style "color" "red" ] [ text "Obesidad" ]
+    table[][
+      tr[][
+        th[][text "Clasificacion"]
+        , th [][text "IMC"]
+      ],
+
+      tr[if model.interpretacion == "Bajo peso" then style "background-color" "red" else style "" ""][
+        td[][text "Bajo peso"],
+        td[][text "<18,50"]
+      ],
+
+      tr[if model.interpretacion == "Normal" then style "background-color" "red" else style "" ""][
+        td[][text "Normal"],
+        td[][text "18,5 - 24,99"]
+      ],
+
+      tr[if model.interpretacion == "Sobrepeso" then style "background-color" "red" else style "" ""][
+        td[][text "Sobrepeso"],
+        td[][text "≥25,00"]
+      ],
+
+      tr[if model.interpretacion == "Obesidad" then style "background-color" "red" else style "" ""][
+        td[][text "Obesidad"],
+        td[][text "≥30,00"]
+      ]
+
+    ]
+    
   else
     div [][]
 
