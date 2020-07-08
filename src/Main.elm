@@ -133,15 +133,15 @@ viewValidation : Model -> Html Msg
 viewValidation model =
   if model.estatura > "0"  && model.peso > "0" then
     div [style "position" "absolute", style "right" "25px", style "bottom" "25px"] [
-      button [  style "padding" "12px 20px", style "border-radius" "70px", onClick Interpretacion ] [ text "Calcule su IMC" ]
+      button [  style "padding" "12px 20px", style "border-radius" "16px", onClick Interpretacion ] [ text "Calcule su IMC" ]
       , 
-      button [  style "padding" "12px 20px", style "border-radius" "70px", onClick Clear ] [ text "Clear" ]
+      button [  style "padding" "12px 20px", style "border-radius" "16px", onClick Clear ] [ text "Clear" ]
     ]
     
   else if model.estatura /= "" && model.estatura <= "0" then
-    div [ style "color" "red", style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce una estatura válida" ]
+    div [ style "color" "#D8000C", style "background" "#FFD2D2", style "padding" "10px", style "border-radius" "16px",style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce una estatura válida" ]
   else if model.peso /= "" && model.peso <= "0" then
-    div [ style "color" "red", style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce un peso válido" ]
+    div [ style "color" "#D8000C", style "background" "#FFD2D2", style "padding" "10px", style "border-radius" "16px",style "position" "absolute", style "bottom" "100px" ] [ text "Por favor, introduce un peso válido" ]
   else
     div [][]
 
@@ -179,4 +179,3 @@ viewInterpretacion model =
   else
     div [][]
 
-    
